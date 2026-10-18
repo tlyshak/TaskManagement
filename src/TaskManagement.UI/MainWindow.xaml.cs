@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Input;
 using TaskManagement.UI.ViewModels;
 
 namespace TaskManagement.UI;
@@ -15,4 +16,6 @@ public partial class MainWindow : Window
         DataContext = viewModel;
         Loaded += async (_, _) => await viewModel.LoadCommand.ExecuteAsync(null);
     }
+
+    private void OnDatePickerCalendarClosed(object sender, RoutedEventArgs e) => Keyboard.ClearFocus();
 }

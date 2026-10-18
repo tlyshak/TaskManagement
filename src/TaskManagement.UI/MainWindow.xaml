@@ -104,18 +104,18 @@
             </Border>
 
             <Grid Margin="16">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="270" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="320" />
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Row="0" Grid.ColumnSpan="3" Margin="0,0,0,12" Padding="12,6" CornerRadius="8"
+                <Border Grid.ColumnSpan="3" Panel.ZIndex="1" HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                        MaxWidth="720" Margin="0,0,0,8" Padding="12,6" CornerRadius="8"
                         Background="{StaticResource ErrorBackgroundBrush}">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="12" ShadowDepth="2" Direction="270" Opacity="0.18" />
+                    </Border.Effect>
                     <Border.Style>
                         <Style TargetType="Border">
                             <Style.Triggers>
@@ -139,7 +139,7 @@
                     </DockPanel>
                 </Border>
 
-                <ContentControl Grid.Row="1" Grid.Column="0" Margin="0,0,12,0" Style="{StaticResource Card}">
+                <ContentControl Grid.Column="0" Margin="0,0,12,0" Style="{StaticResource Card}">
                     <DockPanel>
                         <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
                             <TextBlock Text="Employees" Style="{StaticResource CardTitle}" />
@@ -179,7 +179,7 @@
                     </DockPanel>
                 </ContentControl>
 
-                <ContentControl Grid.Row="1" Grid.Column="1" Margin="0,0,12,0" Style="{StaticResource Card}">
+                <ContentControl Grid.Column="1" Margin="0,0,12,0" Style="{StaticResource Card}">
                     <DockPanel>
                         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
                             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
@@ -330,7 +330,7 @@
                     </DockPanel>
                 </ContentControl>
 
-                <ContentControl Grid.Row="1" Grid.Column="2" Style="{StaticResource Card}">
+                <ContentControl Grid.Column="2" Style="{StaticResource Card}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel>
                             <TextBlock Text="New task" Style="{StaticResource CardTitle}" />
@@ -370,11 +370,11 @@
                                 </Grid.ColumnDefinitions>
                                 <StackPanel>
                                     <TextBlock Text="Planned start" Style="{StaticResource FieldLabel}" />
-                                    <DatePicker SelectedDate="{Binding NewPlannedStart}" />
+                                    <DatePicker SelectedDate="{Binding NewPlannedStart}" CalendarClosed="OnDatePickerCalendarClosed" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
                                     <TextBlock Text="Due" Style="{StaticResource FieldLabel}" />
-                                    <DatePicker SelectedDate="{Binding NewDue}" />
+                                    <DatePicker SelectedDate="{Binding NewDue}" CalendarClosed="OnDatePickerCalendarClosed" />
                                 </StackPanel>
                             </Grid>
 

@@ -7,5 +7,5 @@ public static class SeedData
     public const int ManagerId = 1;
     public const int EngineerId = 2;
     public const int InactiveEngineerId = 3;
-    public const int IdentityStart = 100;
+    public const int IdentityStart = 4;
 }
