@@ -29,6 +29,26 @@ public class TaskItemTests
     }
 
     [Fact]
+    public void Create_InactiveAssigner_Throws()
+    {
+        var assignedBy = NewEmployee(2);
+        assignedBy.Deactivate();
+
+        Assert.Throws<BusinessRuleException>(() =>
+            TaskItem.Create("Title", null, NewEmployee(1), assignedBy, null, null, Now));
+    }
+
+    [Fact]
+    public void Create_Valid_StartsAsNewWithoutCompletedAt()
+    {
+        var task = TaskItem.Create("  Title  ", null, NewEmployee(1), NewEmployee(2), Now, Now, Now);
+
+        Assert.Equal(TaskItemStatus.New, task.Status);
+        Assert.Equal("Title", task.Title);
+        Assert.Null(task.CompletedAt);
+    }
+
+    [Fact]
     public void Create_DueBeforePlannedStart_Throws()
     {
         Assert.Throws<BusinessRuleException>(() =>
@@ -44,6 +64,52 @@ public class TaskItemTests
 
         Assert.Equal(TaskItemStatus.Completed, task.Status);
         Assert.Equal(Now, task.CompletedAt);
+    }
+
+    [Fact]
+    public void ChangeStatus_ToCompletedWithExplicitDate_UsesThatDate()
+    {
+        var task = NewTask();
+        var completedAt = Now.AddHours(-2);
+
+        task.ChangeStatus(TaskItemStatus.Completed, Now, completedAt);
+
+        Assert.Equal(completedAt, task.CompletedAt);
+    }
+
+    [Theory]
+    [InlineData(TaskItemStatus.InProgress)]
+    [InlineData(TaskItemStatus.OnHold)]
+    [InlineData(TaskItemStatus.Cancelled)]
+    public void ChangeStatus_CompletedAtForOtherStatus_ThrowsAndKeepsState(TaskItemStatus status)
+    {
+        var task = NewTask();
+
+        Assert.Throws<BusinessRuleException>(() => task.ChangeStatus(status, Now, Now));
+        Assert.Equal(TaskItemStatus.New, task.Status);
+        Assert.Null(task.CompletedAt);
+    }
+
+    [Theory]
+    [InlineData(TaskItemStatus.InProgress)]
+    [InlineData(TaskItemStatus.OnHold)]
+    [InlineData(TaskItemStatus.Cancelled)]
+    public void ChangeStatus_ToNonCompleted_LeavesCompletedAtEmpty(TaskItemStatus status)
+    {
+        var task = NewTask();
+
+        task.ChangeStatus(status, Now);
+
+        Assert.Equal(status, task.Status);
+        Assert.Null(task.CompletedAt);
+    }
+
+    [Fact]
+    public void ChangeStatus_ToSameStatus_Throws()
+    {
+        var task = NewTask();
+
+        Assert.Throws<BusinessRuleException>(() => task.ChangeStatus(TaskItemStatus.New, Now));
     }
 
     [Theory]

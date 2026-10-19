@@ -168,14 +168,27 @@ public partial class MainViewModel(ScopedServiceRunner runner) : ObservableObjec
         catch (DbUpdateConcurrencyException)
         {
             ErrorMessage = "The task was changed by someone else. The list has been refreshed, please try again.";
-            await ReloadTasksAsync(SelectedTask?.Id);
+            try
+            {
+                await ReloadTasksAsync(SelectedTask?.Id);
+            }
+            catch (Exception ex) when (IsDatabaseError(ex))
+            {
+                ErrorMessage = DatabaseErrorMessage(ex);
+            }
         }
-        catch (Exception ex) when (ex is DbUpdateException or Npgsql.NpgsqlException or InvalidOperationException)
+        catch (Exception ex) when (IsDatabaseError(ex))
         {
-            ErrorMessage = "Database error: " + (ex.InnerException?.Message ?? ex.Message)
-                + " Check that PostgreSQL is running and migrations are applied (dotnet ef database update).";
+            ErrorMessage = DatabaseErrorMessage(ex);
         }
     }
+
+    private static bool IsDatabaseError(Exception ex) =>
+        ex is DbUpdateException or Npgsql.NpgsqlException or InvalidOperationException;
+
+    private static string DatabaseErrorMessage(Exception ex) =>
+        "Database error: " + (ex.InnerException?.Message ?? ex.Message)
+        + " Check that PostgreSQL is running and migrations are applied (dotnet ef database update).";
 
     private static DateTime? StartOfLocalDayUtc(DateTime? date) =>
         date is null ? null : DateTime.SpecifyKind(date.Value.Date, DateTimeKind.Local).ToUniversalTime();

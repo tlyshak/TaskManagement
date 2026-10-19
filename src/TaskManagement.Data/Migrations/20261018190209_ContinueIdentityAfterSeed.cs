@@ -8,6 +8,9 @@ namespace TaskManagement.Data.Migrations
     /// <inheritdoc />
     public partial class ContinueIdentityAfterSeed : Migration
     {
+        // Frozen value instead of SeedData.IdentityStart: a migration must not change when the model does.
+        private const int LastSeededId = 3;
+
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -41,7 +44,7 @@ namespace TaskManagement.Data.Migrations
             {
                 migrationBuilder.Sql(
                     $"SELECT setval(pg_get_serial_sequence('{table}', 'id'), " +
-                    $"GREATEST(COALESCE((SELECT MAX(id) FROM {table}), 0), {SeedData.IdentityStart - 1}));");
+                    $"GREATEST(COALESCE((SELECT MAX(id) FROM {table}), 0), {LastSeededId}));");
             }
         }
 
